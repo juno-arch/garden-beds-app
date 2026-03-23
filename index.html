@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#fffbf0">
+  <title>Garden Faery Bed Estimator</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    :root {
+      --warm-dark: #4a3520;
+      --mushroom: #c4956a;
+      --mushroom-light: #e8d5c0;
+      --cream: #fffbf0;
+      --fairy-pink: #d4a0b0;
+      --fairy-pink-light: #f0dce2;
+      --sparkle: #d4a843;
+      --sparkle-light: #f5eacc;
+      --lavender: #b8a9c9;
+      --lavender-light: #e4ddef;
+      --fairy-glow: #f0e6d0;
+      --text: #4a3520;
+      --text-soft: #7a6650;
+      --border: rgba(196,149,106,0.3);
+      --danger: #bf4a3d;
+      --warning: #d48a2e;
+      --nav-height: 72px;
+      --header-height: 60px;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: calc(var(--nav-height) + 16px);
+      padding-top: var(--header-height);
+    }
+
+    /* ==================== HEADER ==================== */
+    .header {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: var(--header-height);
+      background: var(--cream);
+      border-bottom: 2px dashed var(--mushroom-light);
+      color: var(--warm-dark);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100;
+      gap: 6px;
+    }
+    .header-title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 20px; font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .header-title .sparkle { color: var(--sparkle); font-size: 16px; }
+
+    /* ==================== BOTTOM NAV ==================== */
+    .nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      height: var(--nav-height);
+      background: var(--cream);
+      border-top: 2px dashed var(--mushroom-light);
+      display: flex;
+      z-index: 100;
+      padding: 6px 4px env(safe-area-inset-bottom, 4px);
+    }
+    .nav-item {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      font-family: 'Fredoka', sans-serif; font-size: 10px; font-weight: 500;
+      color: var(--text-soft);
+      cursor: pointer; border: none; background: none;
+      transition: all 0.25s ease;
+      border-radius: 14px;
+      margin: 0 2px;
+      position: relative;
+    }
+    .nav-item .nav-icon { font-size: 20px; margin-bottom: 2px; transition: transform 0.25s ease; }
+    .nav-item.active {
+      color: var(--warm-dark);
+      background: var(--fairy-glow);
+    }
+    .nav-item.active .nav-icon { transform: scale(1.15); }
+    .nav-badge {
+      position: absolute; top: 2px; right: calc(50% - 20px);
+      background: var(--fairy-pink); color: white; font-size: 10px;
+      border-radius: 10px; min-width: 18px; height: 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+    }
+
+    /* ==================== PAGES ==================== */
+    .page { display: none; padding: 16px; max-width: 560px; margin: 0 auto; }
+    .page.active { display: block; }
+
+    /* ==================== SECTION HEADERS ==================== */
+    .section-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-family: 'Fredoka', sans-serif; font-size: 22px; font-weight: 600;
+      color: var(--warm-dark);
+    }
+    .section-count { font-size: 13px; color: var(--text-soft); }
+
+    /* wavy divider used between sections */
+    .wavy-divider {
+      text-align: center; color: var(--mushroom-light); font-size: 20px;
+      letter-spacing: 6px; margin: 4px 0 12px;
+      user-select: none;
+    }
+
+    /* ==================== CARDS ==================== */
+    .card {
+      background: rgba(255,251,240,0.6);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 14px;
+      border: 1px solid rgba(196,149,106,0.2);
+      box-shadow: 0 2px 8px rgba(74,53,32,0.04);
+      position: relative;
+      transition: transform 0.15s ease;
+    }
+    .card:active { transform: scale(0.99); }
+    .card-title {
+      font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600;
+      margin-bottom: 12px; color: var(--warm-dark);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    /* accent card variant — for totals and highlights */
+    .card-accent {
+      border-color: var(--sparkle);
+      border-width: 2px;
+      border-style: dashed;
+      background: linear-gradient(160deg, rgba(255,251,240,0.6) 60%, var(--sparkle-light) 100%);
+    }
+
+    /* pink-tinted card variant */
+    .card-pink {
+      border-color: var(--fairy-pink);
+      border-style: dashed;
+      background: linear-gradient(160deg, rgba(255,251,240,0.6) 70%, var(--fairy-pink-light) 100%);
+    }
+
+    /* ==================== FORMS ==================== */
+    .form-group { margin-bottom: 14px; }
+    .form-label {
+      display: block; font-size: 12px; font-weight: 700;
+      color: var(--text-soft); margin-bottom: 5px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      font-family: 'Fredoka', sans-serif;
+    }
+    .form-input {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid var(--border); border-radius: 12px;
+      font-size: 16px; font-family: 'Nunito', sans-serif;
+      background: var(--cream);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      color: var(--text);
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--mushroom);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(240,230,208,0.4);
+    }
+    .form-input::placeholder { color: var(--mushroom-light); }
+    select.form-input {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a6650' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center;
+    }
+    textarea.form-input { resize: vertical; min-height: 60px; }
+    .form-hint {
+      font-size: 11px; color: var(--text-soft); margin-top: 3px;
+      font-style: italic;
+    }
+
+    /* ==================== BUTTONS ==================== */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 12px 22px; border: 2px solid transparent; border-radius: 14px;
+      font-size: 15px; font-weight: 700; font-family: 'Fredoka', sans-serif;
+      cursor: pointer; transition: all 0.2s; width: 100%;
+      letter-spacing: 0.2px;
+    }
+    .btn-primary {
+      background: var(--mushroom); color: white;
+      border-color: var(--warm-dark);
+    }
+    .btn-primary:active { background: var(--warm-dark); transform: scale(0.97); }
+    .btn-secondary {
+      background: var(--cream); color: var(--warm-dark);
+      border-color: var(--mushroom-light);
+    }
+    .btn-secondary:active { background: var(--fairy-glow); }
+    .btn-danger {
+      background: #fef0ef; color: var(--danger);
+      border-color: #e8c4c0;
+    }
+    .btn-danger:active { background: #f8d8d5; }
+    .btn-sm { padding: 8px 14px; font-size: 13px; width: auto; border-radius: 10px; }
+    .btn-row { display: flex; gap: 8px; margin-top: 12px; }
+    .btn-row .btn { flex: 1; }
+
+    /* ==================== LEAD CARDS ==================== */
+    .lead-card { cursor: pointer; }
+    .lead-card:hover { border-color: var(--mushroom); }
+    .lead-name { font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600; }
+    .lead-detail { font-size: 13px; color: var(--text-soft); margin-top: 2px; }
+    .lead-status {
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+      margin-top: 8px;
+      font-family: 'Fredoka', sans-serif;
+    }
+    .status-new { background: var(--lavender-light); color: #6b5a8a; }
+    .status-quoted { background: var(--sparkle-light); color: #8a6e20; }
+    .status-booked { background: #d4e8c0; color: var(--warm-dark); }
+    .status-done { background: var(--mushroom); color: white; }
+    .status-lost { background: var(--mushroom-light); color: #7a5a3a; }
+    .status-lead { background: var(--lavender-light); color: #6b5a8a; }
+    .status-replied { background: var(--sparkle-light); color: #8a6e20; }
+    .status-repeat { background: var(--fairy-pink-light); color: #8a5a6a; }
+
+    /* ==================== SOURCE BADGE ==================== */
+    .source-badge {
+      display: inline-block; padding: 2px 8px; border-radius: 12px;
+      font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;
+      background: rgba(196,149,106,0.15); color: var(--warm-dark);
+      font-family: 'Fredoka', sans-serif;
+    }
+
+    /* ==================== FILTER CHIPS ==================== */
+    .stats-bar {
+      display: flex; gap: 6px; margin-bottom: 16px; overflow-x: auto;
+      padding-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .stat-chip {
+      flex-shrink: 0; padding: 6px 12px; border-radius: 20px;
+      font-family: 'Fredoka', sans-serif; font-size: 12px; font-weight: 500;
+      cursor: pointer;
+      border: 1.5px solid var(--border); background: white; color: var(--text-soft);
+      transition: all 0.2s;
+    }
+    .stat-chip.active {
+      background: var(--mushroom); color: white;
+      border-color: var(--mushroom);
+    }
+    .stat-chip .count { margin-left: 4px; }
+
+    /* ==================== PRICING DISPLAY ==================== */
+    .pricing-header { text-align: center; margin-bottom: 12px; }
+    .price-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0; font-size: 14px;
+    }
+    .price-row + .price-row { border-top: 1px dashed var(--border); }
+    .price-total { font-family: 'Fredoka', sans-serif; font-size: 20px; font-weight: 700; color: var(--warm-dark); }
+    .price-label { color: var(--text-soft); }
+    .price-total-row {
+      background: var(--fairy-glow);
+      margin: 0 -18px -18px; padding: 14px 18px;
+      border-radius: 0 0 16px 16px;
+      border-top: 2px dashed var(--mushroom-light);
+    }
+
+    /* ==================== QUOTE DISPLAY ==================== */
+    .quote-preview {
+      background: white; border: 2px dashed var(--mushroom);
+      border-radius: 16px; padding: 22px; margin-top: 16px;
+    }
+    .quote-header { text-align: center; margin-bottom: 16px; }
+    .quote-header h2 { font-family: 'Fredoka', sans-serif; color: var(--warm-dark); font-size: 22px; }
+    .quote-header p { color: var(--text-soft); font-size: 13px; margin-top: 4px; }
+    .quote-line {
+      display: flex; justify-content: space-between;
+      padding: 6px 0; font-size: 14px;
+    }
+    .quote-line.total {
+      border-top: 2px dashed var(--warm-dark);
+      margin-top: 8px; padding-top: 10px;
+      font-weight: 700; font-size: 18px; color: var(--warm-dark);
+      font-family: 'Fredoka', sans-serif;
+    }
+    .quote-includes {
+      margin-top: 14px; padding: 14px;
+      background: var(--fairy-glow); border-radius: 12px;
+      font-size: 13px; color: var(--warm-dark);
+      border: 1px dashed var(--mushroom-light);
+    }
+    .quote-includes li { margin-left: 16px; margin-top: 4px; }
+
+    /* ==================== EMPTY STATE ==================== */
+    .empty-state {
+      text-align: center; padding: 48px 20px; color: var(--text-soft);
+    }
+    .empty-state .empty-icon { font-size: 40px; margin-bottom: 10px; }
+    .empty-state p { font-size: 14px; line-height: 1.5; }
+
+    /* ==================== MODAL ==================== */
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(74,53,32,0.25); z-index: 200;
+      align-items: flex-end; justify-content: center;
+      backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--cream); border-radius: 20px 20px 0 0;
+      width: 100%; max-width: 560px;
+      max-height: 85vh; overflow-y: auto;
+      padding: 20px 18px calc(20px + env(safe-area-inset-bottom, 0));
+      border-top: 2px dashed var(--mushroom-light);
+    }
+    .modal-handle {
+      width: 36px; height: 4px; background: var(--mushroom-light); border-radius: 2px;
+      margin: 0 auto 16px;
+    }
+    .modal-title {
+      font-family: 'Fredoka', sans-serif; font-size: 20px; font-weight: 600;
+      margin-bottom: 16px; color: var(--warm-dark);
+    }
+
+    /* ==================== STEPPER ==================== */
+    .stepper { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .stepper button {
+      width: 38px; height: 38px; border-radius: 10px;
+      border: 1.5px solid var(--mushroom-light);
+      background: white; font-size: 20px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--warm-dark); font-weight: 700;
+      font-family: 'Fredoka', sans-serif;
+    }
+    .stepper button:active { background: var(--fairy-glow); }
+    .stepper .stepper-val {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 22px; font-weight: 700; min-width: 36px; text-align: center;
+    }
+
+    /* ==================== REPLY TEMPLATES ==================== */
+    .template-card {
+      cursor: pointer;
+      border-color: var(--mushroom-light);
+      transition: all 0.2s;
+    }
+    .template-card:active { background: var(--fairy-glow); }
+    .template-card .card-title {
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .template-card .tap-hint {
+      font-size: 11px; color: var(--mushroom); font-weight: 400;
+      font-family: 'Nunito', sans-serif;
+    }
+    .template-body {
+      font-size: 14px; white-space: pre-wrap; color: var(--text);
+      line-height: 1.55;
+    }
+
+    /* ==================== MATERIALS PAGE ==================== */
+    .supplier-card .card-title { border-bottom: 1px dashed var(--border); padding-bottom: 10px; }
+    .supplier-price { font-size: 15px; margin-bottom: 6px; }
+    .supplier-name { font-weight: 700; color: var(--warm-dark); }
+    .supplier-address { font-size: 13px; color: var(--text-soft); }
+    .supplier-phone { color: var(--mushroom); text-decoration: none; font-weight: 600; }
+    .supplier-alt {
+      font-size: 12px; color: var(--text-soft);
+      border-top: 1px dashed var(--border); padding-top: 10px; margin-top: 10px;
+      font-style: italic;
+    }
+
+    /* ==================== SHEETS SYNC ==================== */
+    .sync-section {
+      margin-top: 24px; padding-top: 16px;
+      border-top: 2px dashed var(--mushroom-light);
+    }
+    .sync-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
+    }
+    .sync-label { font-size: 13px; font-weight: 600; color: var(--text-soft); font-family: 'Fredoka', sans-serif; }
+
+    /* ==================== ANIMATIONS ==================== */
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal-overlay.active .modal { animation: slideUp 0.3s ease; }
+    @keyframes wiggle { 0%,100% { transform: rotate(0deg); } 25% { transform: rotate(-3deg); } 75% { transform: rotate(3deg); } }
+
+    /* ==================== RESPONSIVE ==================== */
+    @media (min-width: 768px) {
+      .page { padding: 24px; }
+      .modal { border-radius: 20px; margin-bottom: 20px; max-width: 480px; }
+      .modal-overlay { align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-title">
+      <span class="sparkle">✨</span>Garden Faery
+    </div>
+  </div>
+
+  <!-- LEADS PAGE -->
+  <div class="page active" id="page-leads">
+    <div class="section-header">
+      <h2 class="section-title">🌱 Leads</h2>
+      <span class="section-count" id="lead-count"></span>
+    </div>
+    <div class="stats-bar" id="lead-filters"></div>
+    <button class="btn btn-primary btn-sm" onclick="openLeadModal()">+ New Lead</button>
+    <div class="wavy-divider">~ ~ ~</div>
+    <div id="leads-list"></div>
+  </div>
+
+  <!-- PRICING PAGE -->
+  <div class="page" id="page-pricing">
+    <div class="section-header">
+      <h2 class="section-title">💰 Pricing</h2>
+    </div>
+    <div class="card">
+      <div class="card-title">Materials</div>
+      <div class="form-group">
+        <label class="form-label">Cedar per linear foot</label>
+        <input type="number" class="form-input" id="p-cedar-ft" placeholder="3.50" step="0.01" oninput="calcPrice()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Cloth per sq/ft</label>
+        <input type="number" class="form-input" id="p-cloth-sqft" placeholder="0.15" step="0.01" oninput="calcPrice()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Soil per cu/ft</label>
+        <input type="number" class="form-input" id="p-soil-cuft" placeholder="0.35" step="0.01" oninput="calcPrice()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Hardware & fasteners (flat)</label>
+        <input type="number" class="form-input" id="p-hardware" placeholder="8.00" step="0.01" oninput="calcPrice()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Other/misc (flat)</label>
+        <input type="number" class="form-input" id="p-other" placeholder="0.00" step="0.01" oninput="calcPrice()">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Labor</div>
+      <div class="form-group">
+        <label class="form-label">Your hourly rate</label>
+        <input type="number" class="form-input" id="p-rate" placeholder="45.00" step="0.01" oninput="calcPrice()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Hours estimate</label>
+        <input type="number" class="form-input" id="p-hours" placeholder="4" step="0.5" oninput="calcPrice()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Markup %</label>
+        <input type="number" class="form-input" id="p-markup" placeholder="20" step="1" oninput="calcPrice()">
+      </div>
+    </div>
+
+    <div class="card card-accent">
+      <div class="pricing-header">
+        <div style="font-size:12px; color:var(--text-soft); text-transform:uppercase; font-weight:600; letter-spacing:0.5px; font-family:'Fredoka',sans-serif; margin-bottom:8px;">Total Quote</div>
+        <div class="price-total" id="price-total">—</div>
+      </div>
+      <div class="price-row">
+        <span class="price-label">Materials</span>
+        <span id="price-materials">—</span>
+      </div>
+      <div class="price-row">
+        <span class="price-label">Labor (before markup)</span>
+        <span id="price-labor">—</span>
+      </div>
+      <div class="price-row">
+        <span class="price-label">Markup</span>
+        <span id="price-markup">—</span>
+      </div>
+    </div>
+
+    <button class="btn btn-secondary" onclick="savePricingToData()" style="margin-top:16px;">Save Pricing</button>
+  </div>
+
+  <!-- QUOTE PAGE -->
+  <div class="page" id="page-quote">
+    <div class="section-header">
+      <h2 class="section-title">📋 Quote</h2>
+    </div>
+    <div class="card">
+      <div class="card-title">Bed Dimensions</div>
+      <div class="form-group">
+        <label class="form-label">Length (feet)</label>
+        <input type="number" class="form-input" id="q-length" placeholder="8" step="0.5" oninput="renderQuote()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Width (feet)</label>
+        <input type="number" class="form-input" id="q-width" placeholder="4" step="0.5" oninput="renderQuote()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Depth (inches)</label>
+        <input type="number" class="form-input" id="q-depth" placeholder="12" step="1" oninput="renderQuote()">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Customer name</label>
+        <input type="text" class="form-input" id="q-name" placeholder="Alex Johnson">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Quote date</label>
+        <input type="date" class="form-input" id="q-date">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Include in quote</div>
+      <div style="display:flex; gap:12px;">
+        <label style="flex:1; display:flex; align-items:center; gap:6px; font-size:14px; cursor:pointer;">
+          <input type="checkbox" id="q-incl-install" checked style="width:18px; height:18px; cursor:pointer;">
+          Installation
+        </label>
+        <label style="flex:1; display:flex; align-items:center; gap:6px; font-size:14px; cursor:pointer;">
+          <input type="checkbox" id="q-incl-soil" checked style="width:18px; height:18px; cursor:pointer;">
+          Soil
+        </label>
+      </div>
+      <div style="display:flex; gap:12px; margin-top:8px;">
+        <label style="flex:1; display:flex; align-items:center; gap:6px; font-size:14px; cursor:pointer;">
+          <input type="checkbox" id="q-incl-cloth" checked style="width:18px; height:18px; cursor:pointer;">
+          Weed cloth
+        </label>
+        <label style="flex:1; display:flex; align-items:center; gap:6px; font-size:14px; cursor:pointer;">
+          <input type="checkbox" id="q-incl-cedar" checked style="width:18px; height:18px; cursor:pointer;">
+          Cedar
+        </label>
+      </div>
+    </div>
+
+    <div id="quote-preview"></div>
+  </div>
+
+  <!-- REPLY TEMPLATES PAGE -->
+  <div class="page" id="page-templates">
+    <div class="section-header">
+      <h2 class="section-title">💬 Reply</h2>
+    </div>
+    <div class="card template-card" onclick="copyTemplate('Hi! Thanks for reaching out. I'd love to help with your garden bed. Let me know if you'd like a free estimate. Looking forward to chatting!')">
+      <div class="card-title">
+        Quick reply
+        <span class="tap-hint">Tap to copy</span>
+      </div>
+      <div class="template-body">Hi! Thanks for reaching out. I'd love to help with your garden bed. Let me know if you'd like a free estimate. Looking forward to chatting!</div>
+    </div>
+    <div class="card template-card" onclick="copyTemplate('Great question! The best way to design a garden bed depends on your space and what you want to grow. I offer free estimates so we can chat about your ideas and create something beautiful. When works best for you?')">
+      <div class="card-title">
+        Planning help
+        <span class="tap-hint">Tap to copy</span>
+      </div>
+      <div class="template-body">Great question! The best way to design a garden bed depends on your space and what you want to grow. I offer free estimates so we can chat about your ideas and create something beautiful. When works best for you?</div>
+    </div>
+    <div class="card template-card" onclick="copyTemplate('Thanks for the info! Here's the estimate for your garden bed. Let me know if you'd like to move forward or have any questions. Happy to adjust the design or scope based on your budget!')">
+      <div class="card-title">
+        Sending quote
+        <span class="tap-hint">Tap to copy</span>
+      </div>
+      <div class="template-body">Thanks for the info! Here's the estimate for your garden bed. Let me know if you'd like to move forward or have any questions. Happy to adjust the design or scope based on your budget!</div>
+    </div>
+  </div>
+
+  <!-- MATERIALS PAGE -->
+  <div class="page" id="page-materials">
+    <div class="section-header">
+      <h2 class="section-title">🪴 Materials</h2>
+    </div>
+    <div class="card supplier-card">
+      <div class="card-title">Local suppliers</div>
+      <div class="supplier-price">$3.50 / linear foot</div>
+      <div class="supplier-name">Home Depot</div>
+      <div class="supplier-address">Check cedar availability online</div>
+      <div class="supplier-alt">✌️ Can usually pick up same day</div>
+    </div>
+    <div class="card supplier-card">
+      <div class="card-title">Soil suppliers</div>
+      <div class="supplier-price">$0.35 / cubic foot</div>
+      <div class="supplier-name">Local landscape supply</div>
+      <div class="supplier-address">Great for bulk orders</div>
+      <div class="supplier-alt">🚚 May offer delivery</div>
+    </div>
+    <div class="card supplier-card">
+      <div class="card-title">Bulk soil</div>
+      <div class="supplier-price">Check bulk pricing</div>
+      <div class="supplier-name">Amazon or online retailers</div>
+      <div class="supplier-address">Convenient for smaller projects</div>
+      <div class="supplier-alt">📦 2-day shipping available</div>
+    </div>
+
+    <div class="sync-section">
+      <div class="sync-header">
+        <div class="sync-label">📊 Google Sheets Sync</div>
+        <button class="btn btn-sm" id="sync-btn" onclick="toggleSheetsSync()" style="margin-top:0;">Setup</button>
+      </div>
+      <input type="text" class="form-input" id="sheets-url" placeholder="https://... (Google Sheets JSON export)" style="margin-top:8px; display:none;">
+      <div id="sync-status" style="font-size:12px; color:var(--text-soft); margin-top:8px;"></div>
+    </div>
+  </div>
+
+  <!-- CLIENTS PAGE -->
+  <div class="page" id="page-clients">
+    <div class="section-header">
+      <h2 class="section-title">🌻 Clients</h2>
+      <span class="section-count" id="client-count"></span>
+    </div>
+    <div class="stats-bar" id="client-filters"></div>
+    <button class="btn btn-primary btn-sm" onclick="openClientModal()">+ New Client</button>
+    <div class="wavy-divider">~ ~ ~</div>
+    <div id="clients-list"></div>
+  </div>
+
+  <!-- LEAD MODAL -->
+  <div class="modal-overlay" id="lead-modal" onclick="closeLeadModal(event)">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="lead-modal-title">🌱 New Lead</div>
+      <input type="hidden" id="lead-edit-id">
+
+      <div class="form-group">
+        <label class="form-label">Name</label>
+        <input type="text" class="form-input" id="l-name" placeholder="Customer name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone / Email</label>
+        <input type="text" class="form-input" id="l-contact" placeholder="How to reach them">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Location</label>
+        <input type="text" class="form-input" id="l-location" placeholder="Area or address">
+      </div>
+      <div class="form-group">
+        <label class="form-label">What do they need?</label>
+        <textarea class="form-input" id="l-notes" placeholder="Weeding, garden beds, planting..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-input" id="l-status">
+          <option value="new">New Inquiry</option>
+          <option value="quoted">Quoted</option>
+          <option value="booked">Booked</option>
+          <option value="done">Completed</option>
+          <option value="lost">Lost / No Response</option>
+        </select>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="closeLeadModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveLead()">Save</button>
+      </div>
+      <div id="lead-delete-row" style="margin-top:8px; display:none;">
+        <button class="btn btn-danger" onclick="deleteLead()">Delete Lead</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLIENT MODAL -->
+  <div class="modal-overlay" id="client-modal" onclick="closeClientModal(event)">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="client-modal-title">🌻 New Client</div>
+      <input type="hidden" id="client-edit-id">
+
+      <div class="form-group">
+        <label class="form-label">Name</label>
+        <input type="text" class="form-input" id="c-name" placeholder="Client name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="c-email" placeholder="Email address">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        <input type="tel" class="form-input" id="c-phone" placeholder="Phone number">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Location</label>
+        <input type="text" class="form-input" id="c-location" placeholder="City or address">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Source</label>
+        <select class="form-input" id="c-source">
+          <option value="">Select source</option>
+          <option value="craigslist">Craigslist</option>
+          <option value="nextdoor">Nextdoor</option>
+          <option value="facebook">Facebook</option>
+          <option value="landing">Landing Page</option>
+          <option value="referral">Referral</option>
+          <option value="wordofmouth">Word of Mouth</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Service</label>
+        <input type="text" class="form-input" id="c-service" placeholder="What service are they interested in?">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select class="form-input" id="c-status">
+          <option value="lead">Lead</option>
+          <option value="replied">Replied</option>
+          <option value="quoted">Quoted</option>
+          <option value="booked">Booked</option>
+          <option value="done">Done</option>
+          <option value="repeat">Repeat</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Rate</label>
+        <input type="text" class="form-input" id="c-rate" placeholder="$25/hr or custom quote">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-input" id="c-notes" placeholder="Any context..."></textarea>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="closeClientModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveClient()">Save</button>
+      </div>
+      <div id="client-delete-row" style="margin-top:8px; display:none;">
+        <button class="btn btn-danger" onclick="deleteClient()">Delete Client</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="nav">
+    <button class="nav-item active" onclick="switchPage('leads')" id="nav-leads">
+      <span class="nav-icon">🌱</span>
+      Leads
+    </button>
+    <button class="nav-item" onclick="switchPage('pricing')" id="nav-pricing">
+      <span class="nav-icon">💰</span>
+      Pricing
+    </button>
+    <button class="nav-item" onclick="switchPage('quote')" id="nav-quote">
+      <span class="nav-icon">📋</span>
+      Quote
+    </button>
+    <button class="nav-item" onclick="switchPage('templates')" id="nav-templates">
+      <span class="nav-icon">💬</span>
+      Reply
+    </button>
+    <button class="nav-item" onclick="switchPage('materials')" id="nav-materials">
+      <span class="nav-icon">🪴</span>
+      Materials
+    </button>
+    <button class="nav-item" onclick="switchPage('clients')" id="nav-clients">
+      <span class="nav-icon">🌻</span>
+      Clients
+    </button>
+  </nav>
+
+  <script>
+    // ===== DATA STORE =====
+    const DB_KEY = 'gardenapp_data';
+    const SHEETS_URL_KEY = 'gardenapp_sheets_url';
+
+    function getSheetUrl() {
+      return localStorage.getItem(SHEETS_URL_KEY) || '';
+    }
+
+    function loadData() {
+      try {
+        return JSON.parse(localStorage.getItem(DB_KEY)) || { leads: [], clients: [], pricing: {}, settings: {} };
+      } catch { return { leads: [], clients: [], pricing: {}, settings: {} }; }
+    }
+
+    function saveData(data) {
+      localStorage.setItem(DB_KEY, JSON.stringify(data));
+    }
+
+    // ===== GOOGLE SHEETS SYNC =====
+    async function syncFromSheets() {
+      const url = getSheetUrl();
+      if (!url) return;
+      try {
+        const resp = await fetch(url);
+        const json = await resp.json();
+        if (json.leads && json.leads.length > 0) {
+          const data = loadData();
+          data.leads = json.leads;
+          saveData(data);
+          renderLeads();
+          showSyncStatus('Synced from Google Sheets');
+        }
+      } catch (e) {
+        console.log('Sheets sync failed:', e);
+        showSyncStatus('Sync failed — using local data');
+      }
+    }
+
+    async function syncLeadToSheets(lead, action) {
+      const url = getSheetUrl();
+      if (!url) return;
+      try {
+        await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ action, lead, id: lead.id })
+        });
+      } catch (e) {
+        console.log('Sheets write failed:', e);
+      }
+    }
+
+    function showSyncStatus(msg) {
+      let el = document.getElementById('sync-status');
+      if (!el) {
+        el = document.createElement('div');
+        el.id = 'sync-status';
+        el.style.cssText = 'position:fixed; top:64px; left:50%; transform:translateX(-50%); background:var(--warm-dark); color:white; padding:8px 18px; border-radius:20px; font-size:12px; font-family:Fredoka,sans-serif; z-index:200; opacity:0; transition:opacity 0.3s;';
+        document.body.appendChild(el);
+      }
+      el.textContent = msg;
+      el.style.opacity = '1';
+      setTimeout(() => { el.style.opacity = '0'; }, 3000);
+    }
+
+    function toggleSheetsSync() {
+      const inp = document.getElementById('sheets-url');
+      inp.style.display = inp.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function updateSheetsUI() {
+      const btn = document.getElementById('sync-btn');
+      const url = getSheetUrl();
+      if (url) {
+        btn.textContent = 'Resync';
+        document.getElementById('sheets-url').style.display = 'none';
+        document.getElementById('sheets-url').value = url;
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const inp = document.getElementById('sheets-url');
+        if (inp && inp.style.display !== 'none' && inp.value) {
+          localStorage.setItem(SHEETS_URL_KEY, inp.value);
+          showSyncStatus('Google Sheets URL saved!');
+          updateSheetsUI();
+          syncFromSheets();
+        }
+      }
+    });
+
+    function switchPage(page) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('page-' + page).classList.add('active');
+      document.getElementById('nav-' + page).classList.add('active');
+      if (page === 'pricing') calcPrice();
+      if (page === 'quote') {
+        document.getElementById('q-date').value = new Date().toISOString().split('T')[0];
+      }
+    }
+
+    // ===== LEADS =====
+    let activeFilter = 'all';
+
+    function renderLeads() {
+      const data = loadData();
+      const leads = data.leads || [];
+
+      const counts = { all: leads.length, new: 0, quoted: 0, booked: 0, done: 0, lost: 0 };
+      leads.forEach(l => { if (counts[l.status] !== undefined) counts[l.status]++; });
+
+      const filtersHtml = ['all','new','quoted','booked','done','lost'].map(s => {
+        const labels = { all:'All', new:'New', quoted:'Quoted', booked:'Booked', done:'Done', lost:'Lost' };
+        return `<button class="stat-chip ${activeFilter===s?'active':''}" onclick="filterLeads('${s}')">${labels[s]}<span class="count">${counts[s]}</span></button>`;
+      }).join('');
+      document.getElementById('lead-filters').innerHTML = filtersHtml;
+
+      const filtered = activeFilter === 'all' ? leads : leads.filter(l => l.status === activeFilter);
+
+      if (filtered.length === 0) {
+        document.getElementById('leads-list').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🌱</div>
+            <p>${activeFilter === 'all' ? 'No leads yet!<br>Tap <strong>+ New Lead</strong> to add your first inquiry.' : 'No ' + activeFilter + ' leads right now.'}</p>
+          </div>`;
+        return;
+      }
+
+      filtered.sort((a, b) => new Date(b.created) - new Date(a.created));
+
+      document.getElementById('leads-list').innerHTML = filtered.map(l => `
+        <div class="card lead-card" onclick="editLead('${l.id}')">
+          <div class="lead-name">${esc(l.name)}</div>
+          ${l.contact ? `<div class="lead-detail">${esc(l.contact)}</div>` : ''}
+          ${l.location ? `<div class="lead-detail">📍 ${esc(l.location)}</div>` : ''}
+          ${l.notes ? `<div class="lead-detail" style="margin-top:6px; font-style:italic;">"${esc(l.notes)}"</div>` : ''}
+          <span class="lead-status status-${l.status}">${l.status}</span>
+          <div style="font-size:11px; color:var(--text-soft); margin-top:6px;">${timeAgo(l.created)}</div>
+        </div>
+      `).join('');
+    }
+
+    function openLeadModal(id) {
+      document.getElementById('lead-modal').classList.add('active');
+      document.getElementById('lead-edit-id').value = id || '';
+      document.getElementById('lead-modal-title').textContent = id ? '🌱 Edit Lead' : '🌱 New Lead';
+      document.getElementById('lead-delete-row').style.display = id ? 'block' : 'none';
+
+      if (id) {
+        const data = loadData();
+        const lead = data.leads.find(l => l.id === id);
+        if (lead) {
+          document.getElementById('l-name').value = lead.name || '';
+          document.getElementById('l-contact').value = lead.contact || '';
+          document.getElementById('l-location').value = lead.location || '';
+          document.getElementById('l-notes').value = lead.notes || '';
+          document.getElementById('l-status').value = lead.status || 'new';
+        }
+      } else {
+        ['l-name','l-contact','l-location','l-notes'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('l-status').value = 'new';
+      }
+    }
+
+    function closeLeadModal(e) {
+      if (e && e.target !== e.currentTarget) return;
+      document.getElementById('lead-modal').classList.remove('active');
+    }
+
+    function editLead(id) { openLeadModal(id); }
+
+    function saveLead() {
+      const data = loadData();
+      const editId = document.getElementById('lead-edit-id').value;
+      const lead = {
+        id: editId || 'lead_' + Date.now(),
+        name: document.getElementById('l-name').value.trim() || 'Unnamed',
+        contact: document.getElementById('l-contact').value.trim(),
+        location: document.getElementById('l-location').value.trim(),
+        notes: document.getElementById('l-notes').value.trim(),
+        status: document.getElementById('l-status').value,
+        created: editId ? (data.leads.find(l=>l.id===editId)||{}).created || new Date().toISOString() : new Date().toISOString(),
+        updated: new Date().toISOString()
+      };
+
+      if (editId) {
+        const idx = data.leads.findIndex(l => l.id === editId);
+        if (idx >= 0) data.leads[idx] = lead;
+      } else {
+        data.leads.push(lead);
+      }
+
+      saveData(data);
+      syncLeadToSheets(lead, editId ? 'update' : 'add');
+      closeLeadModal();
+      renderLeads();
+    }
+
+    function deleteLead() {
+      const editId = document.getElementById('lead-edit-id').value;
+      if (!editId) return;
+      if (!confirm('Delete this lead?')) return;
+      const data = loadData();
+      data.leads = data.leads.filter(l => l.id !== editId);
+      saveData(data);
+      syncLeadToSheets({ id: editId }, 'delete');
+      closeLeadModal();
+      renderLeads();
+    }
+
+    function filterLeads(status) {
+      activeFilter = status;
+      renderLeads();
+    }
+
+    // ===== CLIENTS =====
+    let activeClientFilter = 'all';
+
+    function renderClients() {
+      const data = loadData();
+      const clients = data.clients || [];
+
+      const counts = { all: clients.length, lead: 0, replied: 0, quoted: 0, booked: 0, done: 0, repeat: 0 };
+      clients.forEach(c => { if (counts[c.status] !== undefined) counts[c.status]++; });
+
+      const filtersHtml = ['all','lead','replied','quoted','booked','done','repeat'].map(s => {
+        const labels = { all:'All', lead:'Lead', replied:'Replied', quoted:'Quoted', booked:'Booked', done:'Done', repeat:'Repeat' };
+        return `<button class="stat-chip ${activeClientFilter===s?'active':''}" onclick="filterClients('${s}')">${labels[s]}<span class="count">${counts[s]}</span></button>`;
+      }).join('');
+      document.getElementById('client-filters').innerHTML = filtersHtml;
+
+      const filtered = activeClientFilter === 'all' ? clients : clients.filter(c => c.status === activeClientFilter);
+
+      if (filtered.length === 0) {
+        document.getElementById('clients-list').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🌻</div>
+            <p>${activeClientFilter === 'all' ? 'No clients yet!<br>Tap <strong>+ New Client</strong> to add your first.' : 'No ' + activeClientFilter + ' clients right now.'}</p>
+          </div>`;
+        return;
+      }
+
+      filtered.sort((a, b) => new Date(b.created) - new Date(a.created));
+
+      document.getElementById('clients-list').innerHTML = filtered.map(c => `
+        <div class="card lead-card" onclick="editClient('${c.id}')">
+          <div class="lead-name">${esc(c.name)}</div>
+          ${c.email || c.phone ? `<div class="lead-detail">${c.email ? esc(c.email) : ''} ${c.email && c.phone ? '•' : ''} ${c.phone ? esc(c.phone) : ''}</div>` : ''}
+          ${c.location ? `<div class="lead-detail">📍 ${esc(c.location)}</div>` : ''}
+          ${c.source ? `<div style="margin-top:6px;"><span class="source-badge">${esc(c.source)}</span></div>` : ''}
+          ${c.service ? `<div class="lead-detail">${esc(c.service)}</div>` : ''}
+          <span class="lead-status status-${c.status}">${c.status}</span>
+          ${c.rate ? `<div class="lead-detail" style="margin-top:6px; font-weight:600; color:var(--mushroom);">${esc(c.rate)}</div>` : ''}
+          ${c.notes ? `<div class="lead-detail" style="margin-top:6px; font-style:italic;">${esc(c.notes)}</div>` : ''}
+          <div style="font-size:11px; color:var(--text-soft); margin-top:6px;">${timeAgo(c.created)}</div>
+        </div>
+      `).join('');
+    }
+
+    function openClientModal(id) {
+      document.getElementById('client-modal').classList.add('active');
+      document.getElementById('client-edit-id').value = id || '';
+      document.getElementById('client-modal-title').textContent = id ? '🌻 Edit Client' : '🌻 New Client';
+      document.getElementById('client-delete-row').style.display = id ? 'block' : 'none';
+
+      if (id) {
+        const data = loadData();
+        const client = data.clients.find(c => c.id === id);
+        if (client) {
+          document.getElementById('c-name').value = client.name || '';
+          document.getElementById('c-email').value = client.email || '';
+          document.getElementById('c-phone').value = client.phone || '';
+          document.getElementById('c-location').value = client.location || '';
+          document.getElementById('c-source').value = client.source || '';
+          document.getElementById('c-service').value = client.service || '';
+          document.getElementById('c-status').value = client.status || 'lead';
+          document.getElementById('c-rate').value = client.rate || '';
+          document.getElementById('c-notes').value = client.notes || '';
+        }
+      } else {
+        ['c-name','c-email','c-phone','c-location','c-service','c-rate','c-notes'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('c-source').value = '';
+        document.getElementById('c-status').value = 'lead';
+      }
+    }
+
+    function closeClientModal(e) {
+      if (e && e.target !== e.currentTarget) return;
+      document.getElementById('client-modal').classList.remove('active');
+    }
+
+    function editClient(id) { openClientModal(id); }
+
+    function saveClient() {
+      const data = loadData();
+      const editId = document.getElementById('client-edit-id').value;
+      const client = {
+        id: editId || 'client_' + Date.now(),
+        name: document.getElementById('c-name').value.trim() || 'Unnamed',
+        email: document.getElementById('c-email').value.trim(),
+        phone: document.getElementById('c-phone').value.trim(),
+        location: document.getElementById('c-location').value.trim(),
+        source: document.getElementById('c-source').value,
+        service: document.getElementById('c-service').value.trim(),
+        status: document.getElementById('c-status').value,
+        rate: document.getElementById('c-rate').value.trim(),
+        notes: document.getElementById('c-notes').value.trim(),
+        created: editId ? (data.clients.find(c=>c.id===editId)||{}).created || new Date().toISOString() : new Date().toISOString(),
+        updated: new Date().toISOString()
+      };
+
+      if (editId) {
+        const idx = data.clients.findIndex(c => c.id === editId);
+        if (idx >= 0) data.clients[idx] = client;
+      } else {
+        data.clients.push(client);
+      }
+
+      saveData(data);
+      closeClientModal();
+      renderClients();
+    }
+
+    function deleteClient() {
+      const editId = document.getElementById('client-edit-id').value;
+      if (!editId) return;
+      if (!confirm('Delete this client?')) return;
+      const data = loadData();
+      data.clients = data.clients.filter(c => c.id !== editId);
+      saveData(data);
+      closeClientModal();
+      renderClients();
+    }
+
+    function filterClients(status) {
+      activeClientFilter = status;
+      renderClients();
+    }
+
+    // ===== PRICING =====
+    function calcPrice() {
+      const cedar = parseFloat(document.getElementById('p-cedar-ft').value) || 0;
+      const cloth = parseFloat(document.getElementById('p-cloth-sqft').value) || 0;
+      const soil = parseFloat(document.getElementById('p-soil-cuft').value) || 0;
+      const hardware = parseFloat(document.getElementById('p-hardware').value) || 0;
+      const other = parseFloat(document.getElementById('p-other').value) || 0;
+      const rate = parseFloat(document.getElementById('p-rate').value) || 0;
+      const hours = parseFloat(document.getElementById('p-hours').value) || 0;
+      const markupPct = parseFloat(document.getElementById('p-markup').value) || 0;
+
+      const matCost = cedar + cloth + soil + hardware + other;
+      const laborBase = rate * hours;
+      const markup = (matCost + laborBase) * (markupPct / 100);
+      const total = matCost + laborBase + markup;
+
+      document.getElementById('price-materials').textContent = '$' + matCost.toFixed(2);
+      document.getElementById('price-labor').textContent = '$' + laborBase.toFixed(2);
+      document.getElementById('price-markup').textContent = '$' + markup.toFixed(2);
+      document.getElementById('price-total').textContent = '$' + total.toFixed(2);
+    }
+
+    function savePricingToData() {
+      const data = loadData();
+      data.pricing = {
+        cedarPerFt: parseFloat(document.getElementById('p-cedar-ft').value) || 0,
+        clothPerSqFt: parseFloat(document.getElementById('p-cloth-sqft').value) || 0,
+        soilPerCuFt: parseFloat(document.getElementById('p-soil-cuft').value) || 0,
+        hardware: parseFloat(document.getElementById('p-hardware').value) || 0,
+        other: parseFloat(document.getElementById('p-other').value) || 0,
+        rate: parseFloat(document.getElementById('p-rate').value) || 0,
+        hours: parseFloat(document.getElementById('p-hours').value) || 0,
+        markupPct: parseFloat(document.getElementById('p-markup').value) || 0
+      };
+      saveData(data);
+      showSyncStatus('Pricing saved!');
+    }
+
+    // ===== QUOTE PREVIEW =====
+    function renderQuote() {
+      const len = parseFloat(document.getElementById('q-length').value) || 0;
+      const wid = parseFloat(document.getElementById('q-width').value) || 0;
+      const dep = (parseFloat(document.getElementById('q-depth').value) || 0) / 12;
+      const name = document.getElementById('q-name').value || 'Customer';
+      const date = document.getElementById('q-date').value || new Date().toISOString().split('T')[0];
+
+      const perim = (len + wid) * 2;
+      const sqft = len * wid;
+      const cuft = len * wid * dep;
+
+      const data = loadData();
+      const p = data.pricing || {};
+      const cedar = perim * (p.cedarPerFt || 3.5);
+      const cloth = (document.getElementById('q-incl-cloth').checked ? sqft : 0) * (p.clothPerSqFt || 0.15);
+      const soil = (document.getElementById('q-incl-soil').checked ? cuft : 0) * (p.soilPerCuFt || 0.35);
+      const hardware = (document.getElementById('q-incl-cedar').checked ? 1 : 0) * (p.hardware || 8);
+      const materials = cedar + cloth + soil + hardware;
+      const labor = (document.getElementById('q-incl-install').checked ? 1 : 0) * ((p.rate || 45) * (p.hours || 4));
+      const markup = (materials + labor) * ((p.markupPct || 20) / 100);
+      const total = materials + labor + markup;
+
+      const includes = [];
+      if (document.getElementById('q-incl-cedar').checked) includes.push('Cedar boards & assembly');
+      if (document.getElementById('q-incl-cloth').checked) includes.push('Weed cloth');
+      if (document.getElementById('q-incl-soil').checked) includes.push('Potting soil');
+      if (document.getElementById('q-incl-install').checked) includes.push('Installation & preparation');
+
+      document.getElementById('quote-preview').innerHTML = `
+        <div class="quote-preview">
+          <div class="quote-header">
+            <h2>Garden Bed Quote</h2>
+            <p>For ${esc(name)} • ${date}</p>
+          </div>
+          <div style="font-size:13px; color:var(--text-soft); margin-bottom:12px; border-bottom:1px dashed var(--border); padding-bottom:8px;">
+            ${len}' × ${wid}' bed, ${dep.toFixed(1)}' deep
+          </div>
+          <div class="quote-line">
+            <span>Materials</span>
+            <span>$${materials.toFixed(2)}</span>
+          </div>
+          ${labor ? `<div class="quote-line"><span>Installation</span><span>$${labor.toFixed(2)}</span></div>` : ''}
+          ${markup ? `<div class="quote-line"><span>Service fee</span><span>$${markup.toFixed(2)}</span></div>` : ''}
+          <div class="quote-line total">
+            <span>TOTAL</span>
+            <span>$${total.toFixed(2)}</span>
+          </div>
+          ${includes.length ? `<div class="quote-includes"><strong>Includes:</strong><ul>${includes.map(i => `<li>${esc(i)}</li>`).join('')}</ul></div>` : ''}
+        </div>
+      `;
+    }
+
+    function copyTemplate(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showSyncStatus('Template copied!');
+      });
+    }
+
+    // ===== UTILITIES =====
+    function esc(s) {
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    function timeAgo(iso) {
+      const d = new Date(iso);
+      const now = new Date();
+      const sec = Math.floor((now - d) / 1000);
+      if (sec < 60) return 'just now';
+      const min = Math.floor(sec / 60);
+      if (min < 60) return min + 'm ago';
+      const hrs = Math.floor(min / 60);
+      if (hrs < 24) return hrs + 'h ago';
+      const days = Math.floor(hrs / 24);
+      if (days < 7) return days + 'd ago';
+      const wks = Math.floor(days / 7);
+      if (wks < 4) return wks + 'w ago';
+      return d.toLocaleDateString();
+    }
+
+    function init() {
+      const data = loadData();
+      if (data.pricing && data.pricing.cedarPerFt) {
+        document.getElementById('p-cedar-ft').value = data.pricing.cedarPerFt;
+        document.getElementById('p-cloth-sqft').value = data.pricing.clothPerSqFt;
+        document.getElementById('p-soil-cuft').value = data.pricing.soilPerCuFt;
+        document.getElementById('p-hardware').value = data.pricing.hardware;
+        document.getElementById('p-other').value = data.pricing.other;
+        document.getElementById('p-rate').value = data.pricing.rate;
+        document.getElementById('p-hours').value = data.pricing.hours;
+        document.getElementById('p-markup').value = data.pricing.markupPct;
+      }
+      calcPrice();
+      renderLeads();
+      renderClients();
+      updateSheetsUI();
+      document.getElementById('q-date').value = new Date().toISOString().split('T')[0];
+
+      if (getSheetUrl()) {
+        syncFromSheets();
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

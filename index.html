@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#fffbf0">
-  <title>Garden Faery Bed Estimator</title>
+  <title>Garden Faery Pro</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -137,7 +137,7 @@
       display: flex; align-items: center; gap: 8px;
     }
 
-    /* accent card variant — for totals and highlights */
+    /* accent card variant: for totals and highlights */
     .card-accent {
       border-color: var(--sparkle);
       border-width: 2px;
@@ -232,6 +232,70 @@
     .status-lead { background: var(--lavender-light); color: #6b5a8a; }
     .status-replied { background: var(--sparkle-light); color: #8a6e20; }
     .status-repeat { background: var(--fairy-pink-light); color: #8a5a6a; }
+
+    /* ==================== REPEAT CLIENT BADGE ==================== */
+    .repeat-badge {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 2px 9px; border-radius: 12px;
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;
+      background: linear-gradient(135deg, var(--fairy-pink-light), var(--sparkle-light));
+      color: var(--warm-dark);
+      font-family: 'Fredoka', sans-serif;
+      border: 1px dashed var(--fairy-pink);
+    }
+
+    /* ==================== SEARCH BAR ==================== */
+    .search-bar {
+      position: relative; margin-bottom: 12px;
+    }
+    .search-bar input {
+      width: 100%; padding: 10px 14px 10px 36px;
+      border: 1.5px solid var(--border); border-radius: 14px;
+      font-size: 14px; font-family: 'Nunito', sans-serif;
+      background: white; color: var(--text);
+    }
+    .search-bar input:focus {
+      outline: none; border-color: var(--mushroom);
+      box-shadow: 0 0 0 3px rgba(240,230,208,0.4);
+    }
+    .search-bar input::placeholder { color: var(--mushroom-light); }
+    .search-icon {
+      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+      font-size: 14px; color: var(--text-soft); pointer-events: none;
+    }
+
+    /* ==================== CLIENT DATE FIELDS ==================== */
+    .client-dates {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px;
+    }
+    .client-date-tag {
+      font-size: 10px; color: var(--text-soft); background: rgba(196,149,106,0.08);
+      padding: 2px 8px; border-radius: 8px; font-family: 'Fredoka', sans-serif;
+    }
+    .client-date-tag.followup {
+      background: rgba(212,168,67,0.15); color: #8a6e20; font-weight: 600;
+    }
+    .client-date-tag.overdue {
+      background: rgba(191,74,61,0.1); color: var(--danger); font-weight: 600;
+    }
+
+    /* ==================== QUOTE LINK BUTTON ==================== */
+    .quote-link-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px; border-radius: 10px; font-size: 11px;
+      font-family: 'Fredoka', sans-serif; font-weight: 500;
+      background: var(--sparkle-light); color: #8a6e20;
+      border: 1px dashed var(--sparkle); cursor: pointer;
+      margin-top: 6px;
+    }
+    .quote-link-btn:active { background: var(--sparkle); color: white; }
+
+    /* ==================== REFERRAL TAG ==================== */
+    .referral-tag {
+      display: inline-flex; align-items: center; gap: 3px;
+      font-size: 10px; color: var(--lavender); font-weight: 600;
+      font-family: 'Fredoka', sans-serif;
+    }
 
     /* ==================== SOURCE BADGE ==================== */
     .source-badge {
@@ -425,6 +489,90 @@
   </div>
 
   <!-- PRICING PAGE -->
+  <!-- VISITS PAGE -->
+  <div class="page" id="page-visits">
+    <div class="section-header">
+      <h2 class="section-title">🌿 Garden Care Visits</h2>
+      <button class="btn btn-primary" onclick="openVisitModal()">+ Log Visit</button>
+    </div>
+
+    <div class="card card-accent" id="visit-summary">
+      <div class="card-title">This Week</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; text-align:center;">
+        <div>
+          <div style="font-size:22px; font-weight:700; color:var(--warm-dark);" id="visit-week-hrs">0</div>
+          <div style="font-size:11px; color:var(--text-soft);">Hours</div>
+        </div>
+        <div>
+          <div style="font-size:22px; font-weight:700; color:var(--sparkle);" id="visit-week-earned">$0</div>
+          <div style="font-size:11px; color:var(--text-soft);">Earned</div>
+        </div>
+        <div>
+          <div style="font-size:22px; font-weight:700; color:var(--fairy-pink);" id="visit-week-count">0</div>
+          <div style="font-size:11px; color:var(--text-soft);">Visits</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="upcoming-visits"></div>
+    <div id="visits-list"></div>
+  </div>
+
+  <!-- VISIT MODAL -->
+  <div class="modal" id="visit-modal" onclick="closeVisitModal(event)">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="visit-modal-title">🌿 Log Visit</h3>
+        <button class="modal-close" onclick="closeVisitModal()">&times;</button>
+      </div>
+      <input type="hidden" id="visit-edit-id">
+      <div class="form-group">
+        <label class="form-label">Client</label>
+        <select class="form-input" id="v-client">
+          <option value="">Select client...</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-input" id="v-date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Hours worked</label>
+        <input type="number" class="form-input" id="v-hours" placeholder="2.5" step="0.25" min="0.25">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tasks completed</label>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;" id="v-task-pills">
+          <button type="button" class="stat-chip" onclick="toggleTaskPill(this)">Weeding</button>
+          <button type="button" class="stat-chip" onclick="toggleTaskPill(this)">Watering</button>
+          <button type="button" class="stat-chip" onclick="toggleTaskPill(this)">Pruning</button>
+          <button type="button" class="stat-chip" onclick="toggleTaskPill(this)">Planting</button>
+          <button type="button" class="stat-chip" onclick="toggleTaskPill(this)">Mulching</button>
+          <button type="button" class="stat-chip" onclick="toggleTaskPill(this)">Mowing</button>
+          <button type="button" class="stat-chip" onclick="toggleTaskPill(this)">Cleanup</button>
+          <button type="button" class="stat-chip" onclick="toggleTaskPill(this)">Harvest</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Schedule</label>
+        <select class="form-input" id="v-recurring">
+          <option value="none">One-time visit</option>
+          <option value="weekly">Weekly</option>
+          <option value="biweekly">Every two weeks</option>
+          <option value="monthly">Monthly</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-input" id="v-notes" rows="2" placeholder="How did the garden look?"></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="saveVisit()" style="width:100%; margin-top:8px;">Plant This Visit 🌱</button>
+      <div id="visit-delete-row" style="display:none; margin-top:12px; text-align:center;">
+        <button onclick="deleteVisit()" style="background:none; border:none; color:var(--danger); font-size:13px; cursor:pointer; font-family:'Fredoka',sans-serif;">Delete this visit</button>
+      </div>
+    </div>
+  </div>
+
   <div class="page" id="page-pricing">
     <div class="section-header">
       <h2 class="section-title">💰 Pricing</h2>
@@ -457,7 +605,7 @@
       <div class="card-title">Labor</div>
       <div class="form-group">
         <label class="form-label">Your hourly rate</label>
-        <input type="number" class="form-input" id="p-rate" placeholder="45.00" step="0.01" oninput="calcPrice()">
+        <input type="number" class="form-input" id="p-rate" placeholder="25.00" step="0.01" oninput="calcPrice()">
       </div>
       <div class="form-group">
         <label class="form-label">Hours estimate</label>
@@ -586,10 +734,10 @@
     <div class="card supplier-card">
       <div class="card-title">🪵 Cedar Lumber</div>
       <div class="supplier-price">
-        <strong>2×12 Cedar</strong> — $4.75/ft
+        <strong>2×12 Cedar</strong>: $4.75/ft
       </div>
       <div class="supplier-address" style="margin-bottom:6px;">
-        <span class="supplier-name">Almquist Lumber</span> — 5301 Boyd Rd, Arcata<br>
+        <span class="supplier-name">Almquist Lumber</span>, 5301 Boyd Rd, Arcata<br>
         <a href="tel:7078260078" class="supplier-phone">(707) 826-0078</a>
       </div>
       <div class="supplier-alt">
@@ -600,13 +748,13 @@
     <div class="card supplier-card">
       <div class="card-title">🧷 Hardware Cloth</div>
       <div class="supplier-price">
-        <strong>3ft roll</strong> — $2.90/ft <span style="color:var(--text-soft); font-size:12px;">($0.97/sq ft)</span>
+        <strong>3ft roll</strong>: $2.90/ft <span style="color:var(--text-soft); font-size:12px;">($0.97/sq ft)</span>
       </div>
       <div class="supplier-price">
-        <strong>4ft roll</strong> — $3.80/ft <span style="color:var(--text-soft); font-size:12px;">($0.95/sq ft)</span>
+        <strong>4ft roll</strong>: $3.80/ft <span style="color:var(--text-soft); font-size:12px;">($0.95/sq ft)</span>
       </div>
       <div class="supplier-address">
-        <span class="supplier-name">Almquist Lumber</span> — 5301 Boyd Rd, Arcata<br>
+        <span class="supplier-name">Almquist Lumber</span>, 5301 Boyd Rd, Arcata<br>
         <a href="tel:7078260078" class="supplier-phone">(707) 826-0078</a>
       </div>
     </div>
@@ -614,13 +762,13 @@
     <div class="card supplier-card">
       <div class="card-title">🌱 Soil & Compost</div>
       <div class="supplier-price">
-        <strong>Potting soil</strong> — $200/yd
+        <strong>Potting soil</strong>: $200/yd
       </div>
       <div class="supplier-price">
-        <strong>Fir compost</strong> — $60/yd
+        <strong>Fir compost</strong>: $60/yd
       </div>
       <div class="supplier-address" style="margin-bottom:6px;">
-        <span class="supplier-name">Mad River Gardens</span> — 3384 Janes Rd, Arcata<br>
+        <span class="supplier-name">Mad River Gardens</span>, 3384 Janes Rd, Arcata<br>
         <a href="tel:7078227049" class="supplier-phone">(707) 822-7049</a>
       </div>
       <div class="supplier-alt">
@@ -634,8 +782,8 @@
         Deck screws, corner brackets, landscape fabric
       </div>
       <div class="supplier-address">
-        <span class="supplier-name">Hensel's Ace Hardware</span> — Arcata<br>
-        <span class="supplier-name">Pierson Building Center</span> — Eureka
+        <span class="supplier-name">Hensel's Ace Hardware</span>, Arcata<br>
+        <span class="supplier-name">Pierson Building Center</span>, Eureka
       </div>
     </div>
 
@@ -654,6 +802,10 @@
     <div class="section-header">
       <h2 class="section-title">🌻 Clients</h2>
       <span class="section-count" id="client-count"></span>
+    </div>
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="client-search" placeholder="Search clients..." oninput="renderClients()">
     </div>
     <div class="stats-bar" id="client-filters"></div>
     <button class="btn btn-primary btn-sm" onclick="openClientModal()">+ New Client</button>
@@ -761,6 +913,22 @@
         <input type="text" class="form-input" id="c-rate" placeholder="$25/hr or custom quote">
       </div>
       <div class="form-group">
+        <label class="form-label">Referred by</label>
+        <input type="text" class="form-input" id="c-referredby" placeholder="Who referred them? (optional)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">First Contact</label>
+        <input type="date" class="form-input" id="c-first-contact">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Last Contact</label>
+        <input type="date" class="form-input" id="c-last-contact">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Next Follow-up</label>
+        <input type="date" class="form-input" id="c-followup">
+      </div>
+      <div class="form-group">
         <label class="form-label">Notes</label>
         <textarea class="form-input" id="c-notes" placeholder="Any context..."></textarea>
       </div>
@@ -781,25 +949,25 @@
       <span class="nav-icon">🌱</span>
       Leads
     </button>
-    <button class="nav-item" onclick="switchPage('pricing')" id="nav-pricing">
-      <span class="nav-icon">💰</span>
-      Pricing
+    <button class="nav-item" onclick="switchPage('visits')" id="nav-visits">
+      <span class="nav-icon">🌿</span>
+      Visits
+    </button>
+    <button class="nav-item" onclick="switchPage('clients')" id="nav-clients">
+      <span class="nav-icon">🌻</span>
+      Clients
     </button>
     <button class="nav-item" onclick="switchPage('quote')" id="nav-quote">
       <span class="nav-icon">📋</span>
       Quote
     </button>
-    <button class="nav-item" onclick="switchPage('templates')" id="nav-templates">
-      <span class="nav-icon">💬</span>
-      Reply
-    </button>
     <button class="nav-item" onclick="switchPage('materials')" id="nav-materials">
       <span class="nav-icon">🪴</span>
-      Materials
+      Supply
     </button>
-    <button class="nav-item" onclick="switchPage('clients')" id="nav-clients">
-      <span class="nav-icon">🌻</span>
-      Clients
+    <button class="nav-item" onclick="switchPage('pricing')" id="nav-pricing">
+      <span class="nav-icon">💰</span>
+      Pricing
     </button>
   </nav>
 
@@ -814,8 +982,8 @@
 
     function loadData() {
       try {
-        return JSON.parse(localStorage.getItem(DB_KEY)) || { leads: [], clients: [], pricing: {}, settings: {} };
-      } catch { return { leads: [], clients: [], pricing: {}, settings: {} }; }
+        return JSON.parse(localStorage.getItem(DB_KEY)) || { leads: [], clients: [], visits: [], pricing: {}, settings: {} };
+      } catch { return { leads: [], clients: [], visits: [], pricing: {}, settings: {} }; }
     }
 
     function saveData(data) {
@@ -829,16 +997,25 @@
       try {
         const resp = await fetch(url);
         const json = await resp.json();
+        const data = loadData();
+        let synced = false;
         if (json.leads && json.leads.length > 0) {
-          const data = loadData();
           data.leads = json.leads;
+          synced = true;
+        }
+        if (json.clients && json.clients.length > 0) {
+          data.clients = json.clients;
+          synced = true;
+        }
+        if (synced) {
           saveData(data);
           renderLeads();
+          renderClients();
           showSyncStatus('Synced from Google Sheets');
         }
       } catch (e) {
         console.log('Sheets sync failed:', e);
-        showSyncStatus('Sync failed — using local data');
+        showSyncStatus('Sync failed: using local data');
       }
     }
 
@@ -849,10 +1026,24 @@
         await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ action, lead, id: lead.id })
+          body: JSON.stringify({ target: 'leads', action, lead, id: lead.id })
         });
       } catch (e) {
         console.log('Sheets write failed:', e);
+      }
+    }
+
+    async function syncClientToSheets(client, action) {
+      const url = getSheetUrl();
+      if (!url) return;
+      try {
+        await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ target: 'clients', action, client, id: client.id })
+        });
+      } catch (e) {
+        console.log('Sheets client sync failed:', e);
       }
     }
 
@@ -901,6 +1092,7 @@
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       document.getElementById('page-' + page).classList.add('active');
       document.getElementById('nav-' + page).classList.add('active');
+      if (page === 'visits') renderVisits();
       if (page === 'pricing') calcPrice();
       if (page === 'quote') {
         document.getElementById('q-date').value = new Date().toISOString().split('T')[0];
@@ -1024,45 +1216,187 @@
     // ===== CLIENTS =====
     let activeClientFilter = 'all';
 
+    // Default starter clients, loaded once on first use
+    const DEFAULT_CLIENTS = [
+      {
+        id: 'client_dena', name: 'Dena', email: '', phone: '',
+        location: 'Arcata', source: 'wordofmouth', service: 'Garden tending & weeding',
+        status: 'repeat', rate: '$25/hr', notes: 'One of our first repeat clients. Regular weekly garden care.',
+        referredBy: '', firstContact: '2026-02-10', lastContact: '2026-03-20', followup: '2026-03-27',
+        created: '2026-02-10T10:00:00Z', updated: '2026-03-20T10:00:00Z'
+      },
+      {
+        id: 'client_elizabeth', name: 'Elizabeth', email: '', phone: '',
+        location: 'Arcata', source: 'wordofmouth', service: 'Garden tending & weeding',
+        status: 'repeat', rate: '$25/hr', notes: 'Repeat client, regular garden care. Great relationship.',
+        referredBy: '', firstContact: '2026-02-15', lastContact: '2026-03-18', followup: '2026-03-25',
+        created: '2026-02-15T10:00:00Z', updated: '2026-03-18T10:00:00Z'
+      },
+      {
+        id: 'client_nextdoor1', name: 'Sarah M.', email: '', phone: '',
+        location: 'Arcata', source: 'nextdoor', service: 'Custom raised bed, 8x4',
+        status: 'replied', rate: '', notes: 'Saw our Nextdoor post. Interested in a raised bed for veggies.',
+        referredBy: '', firstContact: '2026-03-21', lastContact: '2026-03-21', followup: '2026-03-24',
+        created: '2026-03-21T14:00:00Z', updated: '2026-03-21T14:00:00Z'
+      },
+      {
+        id: 'client_nextdoor2', name: 'James K.', email: '', phone: '',
+        location: 'McKinleyville', source: 'nextdoor', service: 'Garden tending',
+        status: 'lead', rate: '', notes: 'Needs help with overgrown backyard. Asked about weekly service.',
+        referredBy: '', firstContact: '2026-03-22', lastContact: '', followup: '2026-03-24',
+        created: '2026-03-22T09:00:00Z', updated: '2026-03-22T09:00:00Z'
+      },
+      {
+        id: 'client_fb1', name: 'Maria L.', email: '', phone: '',
+        location: 'Eureka', source: 'facebook', service: 'Raised bed + soil fill',
+        status: 'quoted', rate: '$380 quoted', notes: 'Facebook inquiry. Sent quote for 6x3 cedar bed with soil.',
+        referredBy: '', firstContact: '2026-03-20', lastContact: '2026-03-22', followup: '2026-03-25',
+        created: '2026-03-20T11:00:00Z', updated: '2026-03-22T11:00:00Z'
+      },
+      {
+        id: 'client_cl1', name: 'Tom R.', email: '', phone: '',
+        location: 'Arcata', source: 'craigslist', service: 'Weeding & yard cleanup',
+        status: 'booked', rate: '$25/hr', notes: 'Craigslist ad response. Booked for Saturday yard cleanup.',
+        referredBy: '', firstContact: '2026-03-19', lastContact: '2026-03-21', followup: '',
+        created: '2026-03-19T16:00:00Z', updated: '2026-03-21T16:00:00Z'
+      },
+      {
+        id: 'client_ref1', name: 'Linda P.', email: '', phone: '',
+        location: 'Arcata', source: 'referral', service: 'Bee keeping consultation',
+        status: 'lead', rate: '', notes: 'Referred by Dena. Has a hive that needs checking.',
+        referredBy: 'Dena', firstContact: '2026-03-22', lastContact: '', followup: '2026-03-25',
+        created: '2026-03-22T12:00:00Z', updated: '2026-03-22T12:00:00Z'
+      },
+      {
+        id: 'client_landing1', name: 'Mike & Jenny', email: '', phone: '',
+        location: 'Blue Lake', source: 'landing', service: 'Two raised beds + planting',
+        status: 'lead', rate: '', notes: 'Came in through the landing page contact form. Want two beds for herbs and tomatoes.',
+        referredBy: '', firstContact: '2026-03-23', lastContact: '', followup: '2026-03-25',
+        created: '2026-03-23T08:00:00Z', updated: '2026-03-23T08:00:00Z'
+      }
+    ];
+
+    function ensureDefaultClients() {
+      const data = loadData();
+      if (!data.visits) { data.visits = []; saveData(data); }
+      if (!data.clients || data.clients.length === 0) {
+        data.clients = DEFAULT_CLIENTS;
+        saveData(data);
+      }
+    }
+
+    function isRaisedBedLead(service) {
+      if (!service) return false;
+      const s = service.toLowerCase();
+      return s.includes('raised bed') || s.includes('garden bed') || s.includes('cedar bed');
+    }
+
+    function formatDateShort(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr + 'T00:00:00');
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    function isOverdue(dateStr) {
+      if (!dateStr) return false;
+      return new Date(dateStr) < new Date(new Date().toISOString().split('T')[0]);
+    }
+
     function renderClients() {
       const data = loadData();
       const clients = data.clients || [];
+      const searchTerm = (document.getElementById('client-search')?.value || '').toLowerCase().trim();
 
+      // Count all (before search filter) for chips
       const counts = { all: clients.length, lead: 0, replied: 0, quoted: 0, booked: 0, done: 0, repeat: 0 };
       clients.forEach(c => { if (counts[c.status] !== undefined) counts[c.status]++; });
 
+      document.getElementById('client-count').textContent = clients.length + ' total';
+
       const filtersHtml = ['all','lead','replied','quoted','booked','done','repeat'].map(s => {
-        const labels = { all:'All', lead:'Lead', replied:'Replied', quoted:'Quoted', booked:'Booked', done:'Done', repeat:'Repeat' };
+        const labels = { all:'All', lead:'Lead', replied:'Replied', quoted:'Quoted', booked:'Booked', done:'Done', repeat:'Repeat ✨' };
         return `<button class="stat-chip ${activeClientFilter===s?'active':''}" onclick="filterClients('${s}')">${labels[s]}<span class="count">${counts[s]}</span></button>`;
       }).join('');
       document.getElementById('client-filters').innerHTML = filtersHtml;
 
-      const filtered = activeClientFilter === 'all' ? clients : clients.filter(c => c.status === activeClientFilter);
+      let filtered = activeClientFilter === 'all' ? clients : clients.filter(c => c.status === activeClientFilter);
+
+      // Apply search
+      if (searchTerm) {
+        filtered = filtered.filter(c => {
+          return (c.name || '').toLowerCase().includes(searchTerm) ||
+                 (c.email || '').toLowerCase().includes(searchTerm) ||
+                 (c.phone || '').includes(searchTerm) ||
+                 (c.location || '').toLowerCase().includes(searchTerm) ||
+                 (c.service || '').toLowerCase().includes(searchTerm) ||
+                 (c.source || '').toLowerCase().includes(searchTerm) ||
+                 (c.notes || '').toLowerCase().includes(searchTerm) ||
+                 (c.referredBy || '').toLowerCase().includes(searchTerm);
+        });
+      }
 
       if (filtered.length === 0) {
         document.getElementById('clients-list').innerHTML = `
           <div class="empty-state">
             <div class="empty-icon">🌻</div>
-            <p>${activeClientFilter === 'all' ? 'No clients yet!<br>Tap <strong>+ New Client</strong> to add your first.' : 'No ' + activeClientFilter + ' clients right now.'}</p>
+            <p>${searchTerm ? 'No clients match "' + esc(searchTerm) + '"' : (activeClientFilter === 'all' ? 'No clients yet!<br>Tap <strong>+ New Client</strong> to add your first.' : 'No ' + activeClientFilter + ' clients right now.')}</p>
           </div>`;
         return;
       }
 
-      filtered.sort((a, b) => new Date(b.created) - new Date(a.created));
+      // Sort: overdue follow-ups first, then by last updated
+      filtered.sort((a, b) => {
+        const aOverdue = isOverdue(a.followup) ? 0 : 1;
+        const bOverdue = isOverdue(b.followup) ? 0 : 1;
+        if (aOverdue !== bOverdue) return aOverdue - bOverdue;
+        return new Date(b.updated || b.created) - new Date(a.updated || a.created);
+      });
 
-      document.getElementById('clients-list').innerHTML = filtered.map(c => `
-        <div class="card lead-card" onclick="editClient('${c.id}')">
-          <div class="lead-name">${esc(c.name)}</div>
+      document.getElementById('clients-list').innerHTML = filtered.map(c => {
+        const isRepeat = c.status === 'repeat';
+        const isBedLead = isRaisedBedLead(c.service);
+        const cardClass = isRepeat ? 'card lead-card card-pink' : 'card lead-card';
+
+        let dateHtml = '';
+        const dates = [];
+        if (c.firstContact) dates.push(`<span class="client-date-tag">First: ${formatDateShort(c.firstContact)}</span>`);
+        if (c.lastContact) dates.push(`<span class="client-date-tag">Last: ${formatDateShort(c.lastContact)}</span>`);
+        if (c.followup) {
+          const overdue = isOverdue(c.followup);
+          dates.push(`<span class="client-date-tag ${overdue ? 'overdue' : 'followup'}">${overdue ? '⚠️' : '📅'} Follow-up: ${formatDateShort(c.followup)}</span>`);
+        }
+        if (dates.length) dateHtml = `<div class="client-dates">${dates.join('')}</div>`;
+
+        return `
+        <div class="${cardClass}" onclick="editClient('${c.id}')">
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <div class="lead-name">${esc(c.name)}</div>
+            ${isRepeat ? '<span class="repeat-badge">✨ Repeat</span>' : ''}
+          </div>
           ${c.email || c.phone ? `<div class="lead-detail">${c.email ? esc(c.email) : ''} ${c.email && c.phone ? '•' : ''} ${c.phone ? esc(c.phone) : ''}</div>` : ''}
           ${c.location ? `<div class="lead-detail">📍 ${esc(c.location)}</div>` : ''}
           ${c.source ? `<div style="margin-top:6px;"><span class="source-badge">${esc(c.source)}</span></div>` : ''}
-          ${c.service ? `<div class="lead-detail">${esc(c.service)}</div>` : ''}
-          <span class="lead-status status-${c.status}">${c.status}</span>
-          ${c.rate ? `<div class="lead-detail" style="margin-top:6px; font-weight:600; color:var(--mushroom);">${esc(c.rate)}</div>` : ''}
-          ${c.notes ? `<div class="lead-detail" style="margin-top:6px; font-style:italic;">${esc(c.notes)}</div>` : ''}
-          <div style="font-size:11px; color:var(--text-soft); margin-top:6px;">${timeAgo(c.created)}</div>
+          ${c.referredBy ? `<div class="referral-tag" style="margin-top:4px;">🤝 Referred by ${esc(c.referredBy)}</div>` : ''}
+          ${c.service ? `<div class="lead-detail" style="margin-top:4px;">${esc(c.service)}</div>` : ''}
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:6px;">
+            <span class="lead-status status-${c.status}">${c.status}</span>
+            ${c.rate ? `<span style="font-size:12px; font-weight:600; color:var(--mushroom);">${esc(c.rate)}</span>` : ''}
+          </div>
+          ${isBedLead ? `<button class="quote-link-btn" onclick="event.stopPropagation(); goToQuoteForClient('${c.id}')">📋 Create Quote</button>` : `<button class="quote-link-btn" onclick="event.stopPropagation(); logVisitForClient('${c.id}')" style="background:var(--lavender-light); color:var(--warm-dark);">🌿 Log Visit</button>`}
+          ${dateHtml}
+          ${c.notes ? `<div class="lead-detail" style="margin-top:6px; font-style:italic;">"${esc(c.notes)}"</div>` : ''}
+          <div style="font-size:11px; color:var(--text-soft); margin-top:6px;">${timeAgo(c.updated || c.created)}</div>
         </div>
-      `).join('');
+      `}).join('');
+    }
+
+    function goToQuoteForClient(clientId) {
+      const data = loadData();
+      const client = data.clients.find(c => c.id === clientId);
+      if (client) {
+        switchPage('quote');
+        document.getElementById('q-name').value = client.name || '';
+      }
     }
 
     function openClientModal(id) {
@@ -1083,12 +1417,19 @@
           document.getElementById('c-service').value = client.service || '';
           document.getElementById('c-status').value = client.status || 'lead';
           document.getElementById('c-rate').value = client.rate || '';
+          document.getElementById('c-referredby').value = client.referredBy || '';
+          document.getElementById('c-first-contact').value = client.firstContact || '';
+          document.getElementById('c-last-contact').value = client.lastContact || '';
+          document.getElementById('c-followup').value = client.followup || '';
           document.getElementById('c-notes').value = client.notes || '';
         }
       } else {
-        ['c-name','c-email','c-phone','c-location','c-service','c-rate','c-notes'].forEach(id => document.getElementById(id).value = '');
+        ['c-name','c-email','c-phone','c-location','c-service','c-rate','c-referredby','c-notes'].forEach(id => document.getElementById(id).value = '');
         document.getElementById('c-source').value = '';
         document.getElementById('c-status').value = 'lead';
+        document.getElementById('c-first-contact').value = new Date().toISOString().split('T')[0];
+        document.getElementById('c-last-contact').value = '';
+        document.getElementById('c-followup').value = '';
       }
     }
 
@@ -1102,6 +1443,7 @@
     function saveClient() {
       const data = loadData();
       const editId = document.getElementById('client-edit-id').value;
+      const existing = editId ? data.clients.find(c => c.id === editId) : null;
       const client = {
         id: editId || 'client_' + Date.now(),
         name: document.getElementById('c-name').value.trim() || 'Unnamed',
@@ -1112,8 +1454,12 @@
         service: document.getElementById('c-service').value.trim(),
         status: document.getElementById('c-status').value,
         rate: document.getElementById('c-rate').value.trim(),
+        referredBy: document.getElementById('c-referredby').value.trim(),
+        firstContact: document.getElementById('c-first-contact').value,
+        lastContact: document.getElementById('c-last-contact').value,
+        followup: document.getElementById('c-followup').value,
         notes: document.getElementById('c-notes').value.trim(),
-        created: editId ? (data.clients.find(c=>c.id===editId)||{}).created || new Date().toISOString() : new Date().toISOString(),
+        created: existing ? existing.created : new Date().toISOString(),
         updated: new Date().toISOString()
       };
 
@@ -1125,6 +1471,7 @@
       }
 
       saveData(data);
+      syncClientToSheets(client, editId ? 'update' : 'add');
       closeClientModal();
       renderClients();
     }
@@ -1136,6 +1483,7 @@
       const data = loadData();
       data.clients = data.clients.filter(c => c.id !== editId);
       saveData(data);
+      syncClientToSheets({ id: editId }, 'delete');
       closeClientModal();
       renderClients();
     }
@@ -1143,6 +1491,228 @@
     function filterClients(status) {
       activeClientFilter = status;
       renderClients();
+    }
+
+    // ===== VISITS =====
+    function renderVisits() {
+      const data = loadData();
+      if (!data.visits) data.visits = [];
+      const visits = data.visits;
+
+      // This week summary (Mon-Sun)
+      const now = new Date();
+      const dayOfWeek = now.getDay();
+      const mondayOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+      const monday = new Date(now);
+      monday.setDate(now.getDate() - mondayOffset);
+      monday.setHours(0,0,0,0);
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      sunday.setHours(23,59,59,999);
+
+      const weekVisits = visits.filter(v => {
+        const d = new Date(v.date + 'T12:00:00');
+        return d >= monday && d <= sunday;
+      });
+      const weekHrs = weekVisits.reduce((sum, v) => sum + (v.hours || 0), 0);
+      const weekEarned = weekHrs * 25;
+
+      document.getElementById('visit-week-hrs').textContent = weekHrs.toFixed(1);
+      document.getElementById('visit-week-earned').textContent = '$' + weekEarned.toFixed(0);
+      document.getElementById('visit-week-count').textContent = weekVisits.length;
+
+      // Upcoming recurring visits
+      const clients = data.clients || [];
+      const recurringVisits = visits.filter(v => v.recurring && v.recurring !== 'none');
+      const upcomingHtml = [];
+      const today = new Date().toISOString().split('T')[0];
+
+      recurringVisits.forEach(v => {
+        const lastDate = new Date(v.date + 'T12:00:00');
+        let nextDate = new Date(lastDate);
+        if (v.recurring === 'weekly') nextDate.setDate(lastDate.getDate() + 7);
+        else if (v.recurring === 'biweekly') nextDate.setDate(lastDate.getDate() + 14);
+        else if (v.recurring === 'monthly') nextDate.setMonth(lastDate.getMonth() + 1);
+
+        const nextStr = nextDate.toISOString().split('T')[0];
+        if (nextStr >= today) {
+          const freqLabel = v.recurring === 'weekly' ? 'Weekly' : v.recurring === 'biweekly' ? 'Every 2 wks' : 'Monthly';
+          upcomingHtml.push(`
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border);">
+              <div>
+                <strong>${esc(v.clientName || 'Unknown')}</strong>
+                <div style="font-size:12px; color:var(--text-soft);">${freqLabel} &middot; ${v.hours || 0}hrs</div>
+              </div>
+              <div style="font-size:13px; color:var(--mushroom); font-weight:600;">${formatDateShort(nextStr)}</div>
+            </div>
+          `);
+        }
+      });
+
+      if (upcomingHtml.length > 0) {
+        document.getElementById('upcoming-visits').innerHTML = `
+          <div class="card">
+            <div class="card-title">📅 Upcoming</div>
+            ${upcomingHtml.slice(0, 5).join('')}
+          </div>`;
+      } else {
+        document.getElementById('upcoming-visits').innerHTML = '';
+      }
+
+      // Recent visits list
+      const sorted = [...visits].sort((a, b) => b.date.localeCompare(a.date));
+      if (sorted.length === 0) {
+        document.getElementById('visits-list').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🌿</div>
+            <p>No visits logged yet!<br>Tap <strong>+ Log Visit</strong> after your next garden care session.</p>
+          </div>`;
+        return;
+      }
+
+      document.getElementById('visits-list').innerHTML = `
+        <div class="card">
+          <div class="card-title">Recent Visits</div>
+          ${sorted.slice(0, 20).map(v => {
+            const freqBadge = v.recurring && v.recurring !== 'none'
+              ? `<span style="font-size:10px; background:var(--lavender-light); color:var(--warm-dark); padding:2px 6px; border-radius:8px; margin-left:6px;">${v.recurring}</span>`
+              : '';
+            return `
+            <div style="padding:10px 0; border-bottom:1px solid var(--border); cursor:pointer;" onclick="editVisit('${v.id}')">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <strong>${esc(v.clientName || 'Unknown')}</strong>
+                <span style="font-size:13px; font-weight:600; color:var(--sparkle);">${v.hours}hrs</span>
+              </div>
+              <div style="font-size:12px; color:var(--text-soft); margin-top:2px;">
+                ${formatDateShort(v.date)}${freqBadge}
+              </div>
+              ${v.tasks ? `<div style="font-size:12px; color:var(--mushroom); margin-top:4px;">${esc(v.tasks)}</div>` : ''}
+              ${v.notes ? `<div style="font-size:12px; color:var(--text-soft); margin-top:2px; font-style:italic;">${esc(v.notes)}</div>` : ''}
+            </div>`;
+          }).join('')}
+        </div>`;
+    }
+
+    function toggleTaskPill(el) {
+      el.classList.toggle('active');
+    }
+
+    function getSelectedTasks() {
+      return Array.from(document.querySelectorAll('#v-task-pills .stat-chip.active'))
+        .map(el => el.textContent.trim());
+    }
+
+    function populateVisitClients() {
+      const data = loadData();
+      const clients = data.clients || [];
+      const sel = document.getElementById('v-client');
+      sel.innerHTML = '<option value="">Select client...</option>' +
+        clients.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
+    }
+
+    function openVisitModal(id) {
+      populateVisitClients();
+      document.getElementById('visit-modal').classList.add('active');
+      document.getElementById('visit-edit-id').value = id || '';
+      document.getElementById('visit-modal-title').textContent = id ? '🌿 Edit Visit' : '🌿 Log Visit';
+      document.getElementById('visit-delete-row').style.display = id ? 'block' : 'none';
+
+      // Reset task pills
+      document.querySelectorAll('#v-task-pills .stat-chip').forEach(el => el.classList.remove('active'));
+
+      if (id) {
+        const data = loadData();
+        const visit = (data.visits || []).find(v => v.id === id);
+        if (visit) {
+          document.getElementById('v-client').value = visit.clientId || '';
+          document.getElementById('v-date').value = visit.date || '';
+          document.getElementById('v-hours').value = visit.hours || '';
+          document.getElementById('v-recurring').value = visit.recurring || 'none';
+          document.getElementById('v-notes').value = visit.notes || '';
+          // Activate matching task pills
+          const tasks = (visit.tasks || '').split(', ');
+          document.querySelectorAll('#v-task-pills .stat-chip').forEach(el => {
+            if (tasks.includes(el.textContent.trim())) el.classList.add('active');
+          });
+        }
+      } else {
+        document.getElementById('v-client').value = '';
+        document.getElementById('v-date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('v-hours').value = '';
+        document.getElementById('v-recurring').value = 'none';
+        document.getElementById('v-notes').value = '';
+      }
+    }
+
+    function closeVisitModal(e) {
+      if (e && e.target !== e.currentTarget) return;
+      document.getElementById('visit-modal').classList.remove('active');
+    }
+
+    function editVisit(id) { openVisitModal(id); }
+
+    function saveVisit() {
+      const data = loadData();
+      if (!data.visits) data.visits = [];
+      const editId = document.getElementById('visit-edit-id').value;
+      const clientId = document.getElementById('v-client').value;
+      const client = (data.clients || []).find(c => c.id === clientId);
+
+      const visit = {
+        id: editId || 'visit_' + Date.now(),
+        clientId: clientId,
+        clientName: client ? client.name : document.getElementById('v-client').selectedOptions[0]?.text || '',
+        date: document.getElementById('v-date').value,
+        hours: parseFloat(document.getElementById('v-hours').value) || 0,
+        tasks: getSelectedTasks().join(', '),
+        recurring: document.getElementById('v-recurring').value,
+        notes: document.getElementById('v-notes').value.trim(),
+        created: editId ? ((data.visits.find(v => v.id === editId) || {}).created || new Date().toISOString()) : new Date().toISOString(),
+        updated: new Date().toISOString()
+      };
+
+      if (!visit.date || !visit.hours) {
+        showSyncStatus('Please fill in date and hours!');
+        return;
+      }
+
+      if (editId) {
+        const idx = data.visits.findIndex(v => v.id === editId);
+        if (idx >= 0) data.visits[idx] = visit;
+      } else {
+        data.visits.push(visit);
+      }
+
+      // Update client's lastContact
+      if (clientId && client) {
+        const cidx = data.clients.findIndex(c => c.id === clientId);
+        if (cidx >= 0) {
+          data.clients[cidx].lastContact = visit.date;
+          data.clients[cidx].updated = new Date().toISOString();
+        }
+      }
+
+      saveData(data);
+      closeVisitModal();
+      renderVisits();
+      showSyncStatus('Visit logged! 🌿');
+    }
+
+    function deleteVisit() {
+      const editId = document.getElementById('visit-edit-id').value;
+      if (!editId) return;
+      if (!confirm('Delete this visit?')) return;
+      const data = loadData();
+      data.visits = (data.visits || []).filter(v => v.id !== editId);
+      saveData(data);
+      closeVisitModal();
+      renderVisits();
+    }
+
+    function logVisitForClient(clientId) {
+      switchPage('visits');
+      openVisitModal();
+      document.getElementById('v-client').value = clientId;
     }
 
     // ===== PRICING =====
@@ -1202,7 +1772,7 @@
       const soil = (document.getElementById('q-incl-soil').checked ? cuft : 0) * (p.soilPerCuFt || 0.35);
       const hardware = (document.getElementById('q-incl-cedar').checked ? 1 : 0) * (p.hardware || 8);
       const materials = cedar + cloth + soil + hardware;
-      const labor = (document.getElementById('q-incl-install').checked ? 1 : 0) * ((p.rate || 45) * (p.hours || 4));
+      const labor = (document.getElementById('q-incl-install').checked ? 1 : 0) * ((p.rate || 25) * (p.hours || 4));
       const markup = (materials + labor) * ((p.markupPct || 20) / 100);
       const total = materials + labor + markup;
 
@@ -1266,6 +1836,7 @@
     }
 
     function init() {
+      ensureDefaultClients();
       const data = loadData();
       if (data.pricing && data.pricing.cedarPerFt) {
         document.getElementById('p-cedar-ft').value = data.pricing.cedarPerFt;
@@ -1280,6 +1851,7 @@
       calcPrice();
       renderLeads();
       renderClients();
+      renderVisits();
       updateSheetsUI();
       document.getElementById('q-date').value = new Date().toISOString().split('T')[0];
 

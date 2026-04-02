@@ -5,33 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#fffbf0">
+  <meta name="theme-color" content="#4a1942">
   <title>Garden Faery Pro</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Elsie+Swash+Caps&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     :root {
-      --warm-dark: #4a3520;
-      --mushroom: #c4956a;
-      --mushroom-light: #e8d5c0;
-      --cream: #fffbf0;
-      --fairy-pink: #d4a0b0;
-      --fairy-pink-light: #f0dce2;
-      --sparkle: #d4a843;
-      --sparkle-light: #f5eacc;
-      --lavender: #b8a9c9;
-      --lavender-light: #e4ddef;
+      /* Constants */
+      --plum: #4a1942;
+      --cream: #f8f4ed;
+      /* Spring palette (Mar-May) */
+      --accent1: #c48bb0;
+      --accent1-light: #e8d2df;
+      --accent2: #a3b88c;
+      --accent2-light: #dce6d2;
+      --highlight: #d4c27a;
+      --highlight-light: #f0eacc;
+      /* Semantic aliases */
+      --warm-dark: #4a1942;
+      --mushroom: #c48bb0;
+      --mushroom-light: #e8d2df;
+      --fairy-pink: #c48bb0;
+      --fairy-pink-light: #e8d2df;
+      --sparkle: #d4c27a;
+      --sparkle-light: #f0eacc;
+      --lavender: #a3b88c;
+      --lavender-light: #dce6d2;
       --fairy-glow: #f0e6d0;
-      --text: #4a3520;
-      --text-soft: #7a6650;
-      --border: rgba(196,149,106,0.3);
+      --text: #4a1942;
+      --text-soft: #6b4a64;
+      --border: rgba(74,25,66,0.15);
       --danger: #bf4a3d;
       --warning: #d48a2e;
       --nav-height: 72px;
       --header-height: 60px;
+      --font-heading: 'Elsie Swash Caps', serif;
+      --font-body: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     }
 
     body {
@@ -55,7 +67,7 @@
       gap: 6px;
     }
     .header-title {
-      font-family: 'Fredoka', sans-serif;
+      font-family: var(--font-heading);
       font-size: 20px; font-weight: 700;
       letter-spacing: -0.3px;
     }
@@ -73,7 +85,7 @@
     }
     .nav-item {
       flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-      font-family: 'Fredoka', sans-serif; font-size: 10px; font-weight: 500;
+      font-family: var(--font-heading); font-size: 10px; font-weight: 500;
       color: var(--text-soft);
       cursor: pointer; border: none; background: none;
       transition: all 0.25s ease;
@@ -105,7 +117,7 @@
       margin-bottom: 14px;
     }
     .section-title {
-      font-family: 'Fredoka', sans-serif; font-size: 22px; font-weight: 600;
+      font-family: var(--font-heading); font-size: 22px; font-weight: 600;
       color: var(--warm-dark);
     }
     .section-count { font-size: 13px; color: var(--text-soft); }
@@ -132,7 +144,7 @@
     }
     .card:active { transform: scale(0.99); }
     .card-title {
-      font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600;
+      font-family: var(--font-heading); font-size: 16px; font-weight: 600;
       margin-bottom: 12px; color: var(--warm-dark);
       display: flex; align-items: center; gap: 8px;
     }
@@ -142,14 +154,14 @@
       border-color: var(--sparkle);
       border-width: 2px;
       border-style: dashed;
-      background: linear-gradient(160deg, rgba(255,251,240,0.6) 60%, var(--sparkle-light) 100%);
+      background: var(--sparkle-light);
     }
 
     /* pink-tinted card variant */
     .card-pink {
       border-color: var(--fairy-pink);
       border-style: dashed;
-      background: linear-gradient(160deg, rgba(255,251,240,0.6) 70%, var(--fairy-pink-light) 100%);
+      background: var(--fairy-pink-light);
     }
 
     /* ==================== FORMS ==================== */
@@ -158,7 +170,7 @@
       display: block; font-size: 12px; font-weight: 700;
       color: var(--text-soft); margin-bottom: 5px;
       text-transform: uppercase; letter-spacing: 0.5px;
-      font-family: 'Fredoka', sans-serif;
+      font-family: var(--font-heading);
     }
     .form-input {
       width: 100%; padding: 11px 14px;
@@ -190,7 +202,7 @@
     .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 6px;
       padding: 12px 22px; border: 2px solid transparent; border-radius: 14px;
-      font-size: 15px; font-weight: 700; font-family: 'Fredoka', sans-serif;
+      font-size: 15px; font-weight: 700; font-family: var(--font-heading);
       cursor: pointer; transition: all 0.2s; width: 100%;
       letter-spacing: 0.2px;
     }
@@ -216,13 +228,13 @@
     /* ==================== LEAD CARDS ==================== */
     .lead-card { cursor: pointer; }
     .lead-card:hover { border-color: var(--mushroom); }
-    .lead-name { font-family: 'Fredoka', sans-serif; font-size: 16px; font-weight: 600; }
+    .lead-name { font-family: var(--font-heading); font-size: 16px; font-weight: 600; }
     .lead-detail { font-size: 13px; color: var(--text-soft); margin-top: 2px; }
     .lead-status {
       display: inline-block; padding: 3px 10px; border-radius: 20px;
       font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
       margin-top: 8px;
-      font-family: 'Fredoka', sans-serif;
+      font-family: var(--font-heading);
     }
     .status-new { background: var(--lavender-light); color: #6b5a8a; }
     .status-quoted { background: var(--sparkle-light); color: #8a6e20; }
@@ -238,9 +250,9 @@
       display: inline-flex; align-items: center; gap: 3px;
       padding: 2px 9px; border-radius: 12px;
       font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;
-      background: linear-gradient(135deg, var(--fairy-pink-light), var(--sparkle-light));
+      background: var(--fairy-pink-light);
       color: var(--warm-dark);
-      font-family: 'Fredoka', sans-serif;
+      font-family: var(--font-heading);
       border: 1px dashed var(--fairy-pink);
     }
 
@@ -270,7 +282,7 @@
     }
     .client-date-tag {
       font-size: 10px; color: var(--text-soft); background: rgba(196,149,106,0.08);
-      padding: 2px 8px; border-radius: 8px; font-family: 'Fredoka', sans-serif;
+      padding: 2px 8px; border-radius: 8px; font-family: var(--font-heading);
     }
     .client-date-tag.followup {
       background: rgba(212,168,67,0.15); color: #8a6e20; font-weight: 600;
@@ -283,7 +295,7 @@
     .quote-link-btn {
       display: inline-flex; align-items: center; gap: 4px;
       padding: 4px 10px; border-radius: 10px; font-size: 11px;
-      font-family: 'Fredoka', sans-serif; font-weight: 500;
+      font-family: var(--font-heading); font-weight: 500;
       background: var(--sparkle-light); color: #8a6e20;
       border: 1px dashed var(--sparkle); cursor: pointer;
       margin-top: 6px;
@@ -294,7 +306,7 @@
     .referral-tag {
       display: inline-flex; align-items: center; gap: 3px;
       font-size: 10px; color: var(--lavender); font-weight: 600;
-      font-family: 'Fredoka', sans-serif;
+      font-family: var(--font-heading);
     }
 
     /* ==================== SOURCE BADGE ==================== */
@@ -302,7 +314,7 @@
       display: inline-block; padding: 2px 8px; border-radius: 12px;
       font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;
       background: rgba(196,149,106,0.15); color: var(--warm-dark);
-      font-family: 'Fredoka', sans-serif;
+      font-family: var(--font-heading);
     }
 
     /* ==================== FILTER CHIPS ==================== */
@@ -313,7 +325,7 @@
     }
     .stat-chip {
       flex-shrink: 0; padding: 6px 12px; border-radius: 20px;
-      font-family: 'Fredoka', sans-serif; font-size: 12px; font-weight: 500;
+      font-family: var(--font-heading); font-size: 12px; font-weight: 500;
       cursor: pointer;
       border: 1.5px solid var(--border); background: white; color: var(--text-soft);
       transition: all 0.2s;
@@ -331,7 +343,7 @@
       padding: 8px 0; font-size: 14px;
     }
     .price-row + .price-row { border-top: 1px dashed var(--border); }
-    .price-total { font-family: 'Fredoka', sans-serif; font-size: 20px; font-weight: 700; color: var(--warm-dark); }
+    .price-total { font-family: var(--font-heading); font-size: 20px; font-weight: 700; color: var(--warm-dark); }
     .price-label { color: var(--text-soft); }
     .price-total-row {
       background: var(--fairy-glow);
@@ -346,7 +358,7 @@
       border-radius: 16px; padding: 22px; margin-top: 16px;
     }
     .quote-header { text-align: center; margin-bottom: 16px; }
-    .quote-header h2 { font-family: 'Fredoka', sans-serif; color: var(--warm-dark); font-size: 22px; }
+    .quote-header h2 { font-family: var(--font-heading); color: var(--warm-dark); font-size: 22px; }
     .quote-header p { color: var(--text-soft); font-size: 13px; margin-top: 4px; }
     .quote-line {
       display: flex; justify-content: space-between;
@@ -356,7 +368,7 @@
       border-top: 2px dashed var(--warm-dark);
       margin-top: 8px; padding-top: 10px;
       font-weight: 700; font-size: 18px; color: var(--warm-dark);
-      font-family: 'Fredoka', sans-serif;
+      font-family: var(--font-heading);
     }
     .quote-includes {
       margin-top: 14px; padding: 14px;
@@ -393,7 +405,7 @@
       margin: 0 auto 16px;
     }
     .modal-title {
-      font-family: 'Fredoka', sans-serif; font-size: 20px; font-weight: 600;
+      font-family: var(--font-heading); font-size: 20px; font-weight: 600;
       margin-bottom: 16px; color: var(--warm-dark);
     }
 
@@ -405,11 +417,11 @@
       background: white; font-size: 20px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       color: var(--warm-dark); font-weight: 700;
-      font-family: 'Fredoka', sans-serif;
+      font-family: var(--font-heading);
     }
     .stepper button:active { background: var(--fairy-glow); }
     .stepper .stepper-val {
-      font-family: 'Fredoka', sans-serif;
+      font-family: var(--font-heading);
       font-size: 22px; font-weight: 700; min-width: 36px; text-align: center;
     }
 
@@ -452,7 +464,7 @@
     .sync-header {
       display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
     }
-    .sync-label { font-size: 13px; font-weight: 600; color: var(--text-soft); font-family: 'Fredoka', sans-serif; }
+    .sync-label { font-size: 13px; font-weight: 600; color: var(--text-soft); font-family: var(--font-heading); }
 
     /* ==================== ANIMATIONS ==================== */
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -568,7 +580,7 @@
       </div>
       <button class="btn btn-primary" onclick="saveVisit()" style="width:100%; margin-top:8px;">Plant This Visit 🌱</button>
       <div id="visit-delete-row" style="display:none; margin-top:12px; text-align:center;">
-        <button onclick="deleteVisit()" style="background:none; border:none; color:var(--danger); font-size:13px; cursor:pointer; font-family:'Fredoka',sans-serif;">Delete this visit</button>
+        <button onclick="deleteVisit()" style="background:none; border:none; color:var(--danger); font-size:13px; cursor:pointer; font-family:'Elsie Swash Caps',serif;">Delete this visit</button>
       </div>
     </div>
   </div>
@@ -619,7 +631,7 @@
 
     <div class="card card-accent">
       <div class="pricing-header">
-        <div style="font-size:12px; color:var(--text-soft); text-transform:uppercase; font-weight:600; letter-spacing:0.5px; font-family:'Fredoka',sans-serif; margin-bottom:8px;">Total Quote</div>
+        <div style="font-size:12px; color:var(--text-soft); text-transform:uppercase; font-weight:600; letter-spacing:0.5px; font-family:'Elsie Swash Caps',serif; margin-bottom:8px;">Total Quote</div>
         <div class="price-total" id="price-total">—</div>
       </div>
       <div class="price-row">
@@ -693,34 +705,6 @@
     </div>
 
     <div id="quote-preview"></div>
-  </div>
-
-  <!-- REPLY TEMPLATES PAGE -->
-  <div class="page" id="page-templates">
-    <div class="section-header">
-      <h2 class="section-title">💬 Reply</h2>
-    </div>
-    <div class="card template-card" onclick="copyTemplate('Hi! Thanks for reaching out. I'd love to help with your garden bed. Let me know if you'd like a free estimate. Looking forward to chatting!')">
-      <div class="card-title">
-        Quick reply
-        <span class="tap-hint">Tap to copy</span>
-      </div>
-      <div class="template-body">Hi! Thanks for reaching out. I'd love to help with your garden bed. Let me know if you'd like a free estimate. Looking forward to chatting!</div>
-    </div>
-    <div class="card template-card" onclick="copyTemplate('Great question! The best way to design a garden bed depends on your space and what you want to grow. I offer free estimates so we can chat about your ideas and create something beautiful. When works best for you?')">
-      <div class="card-title">
-        Planning help
-        <span class="tap-hint">Tap to copy</span>
-      </div>
-      <div class="template-body">Great question! The best way to design a garden bed depends on your space and what you want to grow. I offer free estimates so we can chat about your ideas and create something beautiful. When works best for you?</div>
-    </div>
-    <div class="card template-card" onclick="copyTemplate('Thanks for the info! Here's the estimate for your garden bed. Let me know if you'd like to move forward or have any questions. Happy to adjust the design or scope based on your budget!')">
-      <div class="card-title">
-        Sending quote
-        <span class="tap-hint">Tap to copy</span>
-      </div>
-      <div class="template-body">Thanks for the info! Here's the estimate for your garden bed. Let me know if you'd like to move forward or have any questions. Happy to adjust the design or scope based on your budget!</div>
-    </div>
   </div>
 
   <!-- MATERIALS PAGE -->
@@ -1052,7 +1036,7 @@
       if (!el) {
         el = document.createElement('div');
         el.id = 'sync-status';
-        el.style.cssText = 'position:fixed; top:64px; left:50%; transform:translateX(-50%); background:var(--warm-dark); color:white; padding:8px 18px; border-radius:20px; font-size:12px; font-family:Fredoka,sans-serif; z-index:200; opacity:0; transition:opacity 0.3s;';
+        el.style.cssText = "position:fixed; top:64px; left:50%; transform:translateX(-50%); background:var(--warm-dark); color:white; padding:8px 18px; border-radius:20px; font-size:12px; font-family:'Elsie Swash Caps',serif; z-index:200; opacity:0; transition:opacity 0.3s;";
         document.body.appendChild(el);
       }
       el.textContent = msg;

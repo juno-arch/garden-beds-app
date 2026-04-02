@@ -1,11 +1,11 @@
 {
-  "name": "Garden Faery Bed Estimator",
-  "short_name": "Bed Estimator",
-  "description": "Garden bed pricing, quotes, and lead tracking for Garden Faery, Arcata CA",
+  "name": "Garden Faery Pro",
+  "short_name": "Garden Pro",
+  "description": "Garden care tracking, quotes, and client management for Garden Faery, Arcata CA",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#fffbf0",
-  "theme_color": "#fffbf0",
+  "background_color": "#f8f4ed",
+  "theme_color": "#4a1942",
   "orientation": "portrait-primary",
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
